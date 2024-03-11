@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "llm-chat"
+version = "0.1.0"
+description = "Interfaz de consola para acceder a las APIs de varios LLMs"
+authors = ["autosquash <49131885+autosquash@users.noreply.github.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.10"
+mistralai = "^0.1.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
