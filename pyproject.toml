@@ -6,6 +6,11 @@ authors = ["autosquash <49131885+autosquash@users.noreply.github.com>"]
 readme = "README.md"
 package-mode = false
 
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+]
+
 [tool.poetry.dependencies]
 python = "^3.10"
 mistralai = "^0.1.3"
