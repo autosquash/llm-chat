@@ -17,6 +17,9 @@ from src.domain import (
 )
 from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.now import TimeManager
+from src.manager import LLM_Manager
+from src.model_manager import ModelManager
+from src.models.model_wrapper import ModelWrapper
 from src.protocols import ChatRepositoryProtocol
 from src.serde.shared import SCHEMA_VERSION
 from src.view import Raw
@@ -36,16 +39,22 @@ class CommandHandlerFixture:
         """
         self.mock_view = Mock(spec=View)
         self.mock_select_model_controler = Mock(spec=SelectModelController)
+        self.mock_llm_manager = Mock(spec=LLM_Manager)
         self.mock_repository = Mock(spec=ChatRepositoryProtocol)
+        self.mock_client_wrapper = Mock(spec=ClientWrapper)
+        self.mock_model_wrapper = Mock(spec=ModelWrapper)
+        self.mock_model_manager = Mock(spec=ModelManager)
+        self.mock_llm_manager.repository = self.mock_repository
+        self.mock_llm_manager.model_manager = self.mock_model_manager
+        self.mock_llm_manager.model_manager.client_wrapper = self.mock_client_wrapper
+        self.mock_llm_manager.model_manager.model_wrapper = self.mock_model_wrapper
         self.mock_time_manager = Mock(spec=TimeManager)
         self.mock_time_manager.get_current_time.return_value = "2024-03-01 01:30:00"
-        self.mock_client_wrapper = Mock(spec=ClientWrapper)
         self.prev_messages_stub: list[CompleteMessage] = []
         self.command_handler = CommandHandler(
             view=self.mock_view,
             select_model_controler=self.mock_select_model_controler,
-            repository=self.mock_repository,
-            client_wrapper=self.mock_client_wrapper,
+            llm_manager=self.mock_llm_manager,
             prev_messages=self.prev_messages_stub,
         )
 
@@ -337,7 +346,7 @@ def test_extra_lines_without_delay(
     model_name = ModelName("Model name test")
     model = Model(None, model_name)
 
-    fixture.command_handler._model_manager.model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
+    fixture.command_handler._llm_manager.model_manager.model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
         model
     )
     fixture.mock_view.input_extra_line = input_extra_line
@@ -363,7 +372,7 @@ def test_extra_lines_with_delay(command_handler_fixture: CommandHandlerFixture) 
     model_name = ModelName("Model name test")
     model = Model(None, model_name)
 
-    fixture.command_handler._model_manager.model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
+    fixture.command_handler._llm_manager.model_manager.model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
         model
     )
     fixture.mock_view.input_extra_line = input_extra_line
