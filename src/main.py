@@ -4,7 +4,6 @@ from typing import Sequence
 from dotenv import load_dotenv
 
 from src.command_handler import ExitException
-from src.controllers.select_model import SelectModelController
 from src.domain import Model
 from src.infrastructure.llm_connection import ClientWrapper
 from src.models_data import get_models
@@ -20,7 +19,6 @@ PROGRAM_PROMPT = Raw(
 
 class Main:
     def __init__(self, models: Sequence[Model]) -> None:
-        self._select_model_controler = SelectModelController(models)
         self._view = SimpleView()
         load_dotenv()
         mistral_api_key = os.environ.get("MISTRAL_API_KEY")
