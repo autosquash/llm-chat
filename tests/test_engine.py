@@ -7,7 +7,6 @@ from src.controllers.command_interpreter import (
     CommandInterpreter,
     CommandNoValid,
 )
-from src.controllers.select_model import SelectModelController
 from src.engine import MainEngine
 from src.view import Raw
 from src.view.view import View
@@ -19,14 +18,12 @@ class EngineFixture:
 
         self.mock_command_handler = Mock(spec=CommandHandler)
         self.mock_command_interpreter = Mock(spec=CommandInterpreter)
-        self.mock_select_model_controller = Mock(spec=SelectModelController)
         self.mock_view = Mock(spec=View)
 
         self.engine = MainEngine(
             models=[],
             command_interpreter=self.mock_command_interpreter,
             command_handler=self.mock_command_handler,
-            select_model_controler=self.mock_select_model_controller,
             view=self.mock_view,
         )
 

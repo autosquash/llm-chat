@@ -32,6 +32,4 @@ def setup_engine(
         repository=chat_repository,
         client_wrapper=client_wrapper,
     )
-    return MainEngine(
-        models, command_interpreter, command_handler, select_model_controler, view
-    )
+    return MainEngine(models, command_interpreter, command_handler, view)

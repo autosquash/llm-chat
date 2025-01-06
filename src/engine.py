@@ -5,7 +5,6 @@ from src.controllers.command_interpreter import (
     CommandInterpreter,
     CommandNoValid,
 )
-from src.controllers.select_model import SelectModelController
 from src.domain import Model
 from src.protocols import ViewProtocol
 from src.view import Raw
@@ -18,11 +17,9 @@ class MainEngine:
         models: Sequence[Model],
         command_interpreter: CommandInterpreter,
         command_handler: CommandHandler,
-        select_model_controler: SelectModelController,
         view: ViewProtocol,
     ) -> None:
         self._models = models
-        select_model_controler = select_model_controler
         self._command_interpreter = command_interpreter
         self._command_handler = command_handler
         self._view = view
