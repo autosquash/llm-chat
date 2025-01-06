@@ -2,8 +2,9 @@ from typing import Final
 
 from src.controllers.command_interpreter import Action, ActionType
 from src.domain import CompleteMessage, ConversationId, ConversationText
+from src.manager import LLM_Manager
 from src.models.shared import extract_chat_messages
-from src.protocols import ChatRepositoryProtocol, ViewProtocol
+from src.protocols import ViewProtocol
 from src.serde import deserialize_conversation_text_into_messages
 from src.view import Raw
 
@@ -11,30 +12,32 @@ from src.view import Raw
 class ConversationLoader:
     __slots__ = (
         "_view",
-        "_repository",
+        "_llm_manager",
         "_prev_messages",
     )
     _view: Final[ViewProtocol]
-    _repository: Final[ChatRepositoryProtocol]
+    _llm_manager: Final[LLM_Manager]
     _prev_messages: Final[list[CompleteMessage]]
 
     def __init__(
         self,
         *,
         view: ViewProtocol,
-        repository: ChatRepositoryProtocol,
+        llm_manager: LLM_Manager,
         prev_messages: list[CompleteMessage],
     ):
         self._view = view
-        self._repository = repository
+        self._llm_manager = llm_manager
         self._prev_messages = prev_messages
 
     def load_conversation(
         self, action: Action, conversation_id: ConversationId
     ) -> None:
         """Load a conversation based in its id"""
-        conversation_text = self._repository.load_conversation_as_conversation_text(
-            conversation_id
+        conversation_text = (
+            self._llm_manager.repository.load_conversation_as_conversation_text(
+                conversation_id
+            )
         )
         self._prev_messages[:] = deserialize_conversation_text_into_messages(
             conversation_text

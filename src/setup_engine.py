@@ -1,5 +1,7 @@
 from collections.abc import Sequence
 
+from src.manager import LLM_Manager
+from src.model_manager import ModelManager
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 
 from src.command_handler import CommandHandler
@@ -26,10 +28,11 @@ def setup_engine(
     )
     view = View(TimeManager())
     command_interpreter = CommandInterpreter()
+    model_manager = ModelManager(client_wrapper)
+    llm_manager = LLM_Manager(chat_repository, model_manager)
     command_handler = CommandHandler(
         view=view,
         select_model_controler=select_model_controler,
-        repository=chat_repository,
-        client_wrapper=client_wrapper,
+        llm_manager=llm_manager,
     )
     return MainEngine(models, command_interpreter, command_handler, view)
