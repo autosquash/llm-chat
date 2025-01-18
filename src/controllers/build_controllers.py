@@ -28,6 +28,6 @@ def build_controllers(
         conversation_loader=conversation_loader,
         query_answerer=query_answerer,
         final_query_extractor=final_query_extractor,
-        data_checker=DataChecker(llm_manager.repository),
+        data_checker=DataChecker(view, llm_manager),
         queries_checker=QueriesNumberChecker(view),
     )
