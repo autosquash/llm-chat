@@ -1,6 +1,6 @@
 import json
 from collections.abc import Sequence
-from typing import Final
+from typing import Any, Final
 
 from .repository import ShopRepository
 
@@ -28,7 +28,7 @@ class ToolsManager:
         return prices
 
 
-tools: Final = [
+tools: Final[Any] = [
     {
         "type": "function",
         "function": {
