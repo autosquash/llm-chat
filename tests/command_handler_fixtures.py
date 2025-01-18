@@ -58,7 +58,7 @@ class CommandHandlerFixtureWithModel(CommandHandlerFixture):
         """
         Private helper method for selecting a model using the SelectModelController mock.
         """
-        model_name = ModelName("Model name test")
+        model_name = ModelName("model_name_test")
         self.mock_select_model_controler.select_model.return_value = Model(
             None, model_name
         )

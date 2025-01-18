@@ -56,7 +56,7 @@ def test_show_model_works_when_no_extra_chat(
 
     assert len(fixture.prev_messages_stub) == 0
     fixture.mock_view.display_neutral_msg.assert_called_once_with(
-        Raw("El modelo actual es Model name test")
+        Raw("El modelo actual es model_name_test")
     )
 
 
@@ -288,7 +288,7 @@ def test_extra_lines_without_delay(
             return (lines.pop(0), 0)
         raise RuntimeError
 
-    model_name = ModelName("Model name test")
+    model_name = ModelName("model_name_test")
     model = Model(None, model_name)
 
     fixture.command_handler._llm_manager.model_manager.model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
@@ -314,7 +314,7 @@ def test_extra_lines_with_delay(command_handler_fixture: CommandHandlerFixture) 
             return (lines.pop(), DELIBERATE_INPUT_TIME)
         raise RuntimeError
 
-    model_name = ModelName("Model name test")
+    model_name = ModelName("model_name_test")
     model = Model(None, model_name)
 
     fixture.command_handler._llm_manager.model_manager.model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
