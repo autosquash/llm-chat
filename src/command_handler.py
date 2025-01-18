@@ -1,5 +1,7 @@
 from typing import Final
 
+from src.llm_manager import LLM_Manager
+
 from .controllers import (
     Action,
     ActionType,
@@ -7,13 +9,7 @@ from .controllers import (
     SelectModelController,
     build_controllers,
 )
-from .domain import CompleteMessage
-from .model_manager import ModelManager
-from .protocols import (
-    ChatRepositoryProtocol,
-    ClientWrapperProtocol,
-    ViewProtocol,
-)
+from .protocols import ViewProtocol
 from .serde import convert_digits_to_conversation_id
 from .strategies import (
     ActionStrategy,
@@ -31,41 +27,32 @@ class ExitException(Exception): ...
 class CommandHandler:
     __slots__ = (
         "_view",
-        "_model_manager",
-        "_repository",
         "_controllers",
-        "_prev_messages",
+        "_llm_manager",
     )
+
     _view: Final[ViewProtocol]
-    _model_manager: Final[ModelManager]
-    _repository: Final[ChatRepositoryProtocol]
-    _prev_messages: Final[list[CompleteMessage]]
     _controllers: Final[Controllers]
+    _llm_manager: Final[LLM_Manager]
 
     def __init__(
         self,
         *,
         view: ViewProtocol,
         select_model_controler: SelectModelController,
-        repository: ChatRepositoryProtocol,
-        client_wrapper: ClientWrapperProtocol,
-        prev_messages: list[CompleteMessage] | None = None,
+        llm_manager: LLM_Manager,
     ):
         self._view = view
-        self._model_manager = ModelManager(client_wrapper)
-        self._repository = repository
-        self._prev_messages = prev_messages if prev_messages is not None else []
+        self._llm_manager = llm_manager
         self._controllers = build_controllers(
             select_model_controler,
             self._view,
-            self._repository,
-            self._model_manager,
-            self._prev_messages,
+            self._llm_manager,
         )
 
     def prompt_to_select_model(self) -> None:
         model = self._controllers.select_model_controler.select_model()
-        self._model_manager.model_wrapper.change(model)
+        self._llm_manager.model_manager.model_wrapper.change(model)
 
     def process_action(self, action: Action, remaining_input: str) -> None:
         debug = False
@@ -121,17 +108,17 @@ class CommandHandler:
             return
 
         if new_conversation:
-            self._prev_messages.clear()
+            self._llm_manager.prev_messages.clear()
         self._controllers.query_answerer.answer_queries(queries, debug)
 
     def _get_strategy(self, action: Action) -> ActionStrategy | None:
         action_strategy: ActionStrategy | None = None
         if action.type == ActionType.SHOW_MODEL:
             action_strategy = ShowModelAction(
-                self._view, self._model_manager.model_wrapper
+                self._view, self._llm_manager.model_manager.model_wrapper
             )
         elif action.type == ActionType.SYSTEM_PROMPT:
             action_strategy = EstablishSystemPromptAction(
-                self._view, self._prev_messages
+                self._view, self._llm_manager.prev_messages
             )
         return action_strategy

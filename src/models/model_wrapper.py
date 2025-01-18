@@ -1,13 +1,15 @@
-from dataclasses import dataclass, field
-
 from src.domain import Model
 
 
-@dataclass
 class ModelWrapper:
     """Mutable class to hold current model inside"""
 
-    model: Model | None = field(default=None)
+    __slots__ = ("model",)
+
+    model: Model | None
+
+    def __init__(self, model: Model | None = None):
+        self.model = model
 
     def change(self, model: Model) -> None:
         self.model = model

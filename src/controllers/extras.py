@@ -1,19 +1,29 @@
 from dataclasses import dataclass
+from typing import Final
 
-from src.protocols import ChatRepositoryProtocol, ViewProtocol
+from src.llm_manager import LLM_Manager
+from src.protocols import ViewProtocol
 from src.settings import QUERY_NUMBER_LIMIT_WARNING
+from src.view.io_helpers import escape_for_rich
+from src.view.string_types import Raw
 
 
-@dataclass(frozen=True)
 class DataChecker:
-    _repository: ChatRepositoryProtocol
+    __slots__ = ("_llm_manager", "_view")
+
+    _view: Final[ViewProtocol]
+    _llm_manager: Final[LLM_Manager]
+
+    def __init__(self, view: ViewProtocol, llm_manager: LLM_Manager):
+        self._view = view
+        self._llm_manager = llm_manager
 
     def check_data(self) -> None:
-        ids = self._repository.get_conversation_ids()
-        print(f"{len(ids)=}")
+        ids = self._llm_manager.repository.get_conversation_ids()
+        self._view.simple_view.print(escape_for_rich(Raw(f"{len(ids)=}")))
         for id_ in ids:
             try:
-                self._repository.load_conversation(id_)
+                self._llm_manager.repository.load_conversation(id_)
             except Exception as err:
                 print(type(err))
                 print(err)
