@@ -7,14 +7,16 @@ from src.protocols import ChatRepositoryProtocol
 
 class LLM_Manager:
     __slots__ = ("repository", "model_manager", "prev_messages")
-    repository: ChatRepositoryProtocol
-    model_manager: ModelManager
+
+    repository: Final[ChatRepositoryProtocol]
+    model_manager: Final[ModelManager]
     prev_messages: Final[list[CompleteMessage]]
 
     def __init__(
         self,
         repository: ChatRepositoryProtocol,
         model_manager: ModelManager,
+        *,
         prev_messages: list[CompleteMessage] | None = None,
     ):
         self.repository = repository
