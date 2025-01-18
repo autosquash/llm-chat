@@ -9,7 +9,6 @@ from .controllers import (
     SelectModelController,
     build_controllers,
 )
-from .domain import CompleteMessage
 from .protocols import ViewProtocol
 from .serde import convert_digits_to_conversation_id
 from .strategies import (
@@ -30,10 +29,9 @@ class CommandHandler:
         "_view",
         "_controllers",
         "_llm_manager",
-        "_prev_messages",
     )
+
     _view: Final[ViewProtocol]
-    _prev_messages: Final[list[CompleteMessage]]
     _controllers: Final[Controllers]
     _llm_manager: Final[LLM_Manager]
 
@@ -43,16 +41,13 @@ class CommandHandler:
         view: ViewProtocol,
         select_model_controler: SelectModelController,
         llm_manager: LLM_Manager,
-        prev_messages: list[CompleteMessage] | None = None,
     ):
         self._view = view
         self._llm_manager = llm_manager
-        self._prev_messages = prev_messages if prev_messages is not None else []
         self._controllers = build_controllers(
             select_model_controler,
             self._view,
             self._llm_manager,
-            self._prev_messages,
         )
 
     def prompt_to_select_model(self) -> None:
@@ -113,7 +108,7 @@ class CommandHandler:
             return
 
         if new_conversation:
-            self._prev_messages.clear()
+            self._llm_manager.prev_messages.clear()
         self._controllers.query_answerer.answer_queries(queries, debug)
 
     def _get_strategy(self, action: Action) -> ActionStrategy | None:
@@ -124,6 +119,6 @@ class CommandHandler:
             )
         elif action.type == ActionType.SYSTEM_PROMPT:
             action_strategy = EstablishSystemPromptAction(
-                self._view, self._prev_messages
+                self._view, self._llm_manager.prev_messages
             )
         return action_strategy

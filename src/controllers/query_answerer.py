@@ -13,22 +13,18 @@ class QueryAnswerer:
     __slots__ = (
         "_view",
         "_llm_manager",
-        "_prev_messages",
     )
     _view: Final[ViewProtocol]
     _llm_manager: Final[LLM_Manager]
-    _prev_messages: Final[list[CompleteMessage]]
 
     def __init__(
         self,
         *,
         view: ViewProtocol,
         llm_manager: LLM_Manager,
-        prev_messages: list[CompleteMessage],
     ):
         self._view = view
         self._llm_manager = llm_manager
-        self._prev_messages = prev_messages
 
     def answer_queries(self, queries: Sequence[QueryText], debug: bool = False) -> None:
         """If there are multiple queries, the conversation ends after executing them."""
@@ -36,7 +32,7 @@ class QueryAnswerer:
         messages = None
         for i, query in enumerate(queries):
             messages = self._answer_query(debug, i + 1, len(queries), query)
-        self._prev_messages[:] = messages or []
+        self._llm_manager.prev_messages[:] = messages or []
 
     def _answer_query(
         self, debug: bool, current: int, total: int, query: QueryText
@@ -51,7 +47,7 @@ class QueryAnswerer:
         self, query: QueryText, debug: bool = False
     ) -> QueryResult:
         return self._llm_manager.model_manager.get_simple_response(
-            query, self._prev_messages, debug=debug
+            query, self._llm_manager.prev_messages, debug=debug
         )
 
     def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
