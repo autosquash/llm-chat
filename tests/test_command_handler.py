@@ -81,29 +81,38 @@ def test_process_system(command_handler_fixture: CommandHandlerFixture) -> None:
     fixture.mock_view.write_object.assert_called_once_with("System prompt established")
 
 
-class AdvancedFixture(CommandHandlerFixture):
+class CommandHandlerFixtureWithModel(CommandHandlerFixture):
     def __init__(self) -> None:
         """
         Sets up additional variables and inherits the base setup, define a multiline
         user prompt to ensure that tests avoid infinite loops in mutation testing.
         """
         super().__init__()
-        self.model_name = ModelName("Model name test")
-        # if a line is not sent before the `end` command, there is a risk
-        # of creating an infinite loop when running the mutation tests
-        self.user_prompt_lines = [
-            (line, DELIBERATE_INPUT_TIME) for line in ["something more", "end"]
-        ]
         self._select_model()
 
     def _select_model(self) -> None:
         """
         Private helper method for selecting a model using the SelectModelController mock.
         """
+        model_name = ModelName("Model name test")
         self.mock_select_model_controler.select_model.return_value = Model(
-            None, self.model_name
+            None, model_name
         )
         self.command_handler.prompt_to_select_model()
+
+
+class AdvancedFixture(CommandHandlerFixtureWithModel):
+    def __init__(self) -> None:
+        """
+        In addition to inherited behavior, define a multiline
+        user prompt to ensure that tests avoid infinite loops in mutation testing.
+        """
+        super().__init__()
+        # if a line is not sent before the `end` command, there is a risk
+        # of creating an infinite loop when running the mutation tests
+        self.user_prompt_lines = [
+            (line, DELIBERATE_INPUT_TIME) for line in ["something more", "end"]
+        ]
 
 
 @pytest.fixture
@@ -111,11 +120,18 @@ def advanced_fixture() -> AdvancedFixture:
     return AdvancedFixture()
 
 
-def test_show_model_works_when_no_extra_chat(advanced_fixture: AdvancedFixture) -> None:
+@pytest.fixture
+def fixture_with_model() -> CommandHandlerFixtureWithModel:
+    return CommandHandlerFixtureWithModel()
+
+
+def test_show_model_works_when_no_extra_chat(
+    fixture_with_model: CommandHandlerFixtureWithModel,
+) -> None:
     """
     Tests that displaying the current model works correctly when no extra chat is present.
     """
-    fixture = advanced_fixture
+    fixture = fixture_with_model
     remaining = ""
 
     fixture.command_handler.process_action(Action(ActionType.SHOW_MODEL), remaining)
@@ -127,17 +143,19 @@ def test_show_model_works_when_no_extra_chat(advanced_fixture: AdvancedFixture) 
 
 
 def test_show_model_fails_when_there_is_extra_prompt(
-    advanced_fixture: AdvancedFixture,
+    fixture_with_model: CommandHandlerFixtureWithModel,
 ) -> None:
     """
     Tests that an error is raised when extraneous text is present in the prompt after
     the command to show the model.
     """
-    fixture = advanced_fixture
+
     remaining = "some text"
 
     with pytest.raises(ValueError):
-        fixture.command_handler.process_action(Action(ActionType.SHOW_MODEL), remaining)
+        fixture_with_model.command_handler.process_action(
+            Action(ActionType.SHOW_MODEL), remaining
+        )
 
 
 def test_chat_with_model(advanced_fixture: AdvancedFixture) -> None:
