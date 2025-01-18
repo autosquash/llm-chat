@@ -10,8 +10,14 @@ class Case:
 
 
 cases = [
-    Case(expected=[], text="there is not placeholders here"),
-    Case(expected=["$0placeholder"], text="there is a placeholder here: $0placeholder"),
+    Case(
+        expected=[],
+        text="there is not placeholders here",
+    ),
+    Case(
+        expected=["$0placeholder"],
+        text="there is a placeholder here: $0placeholder",
+    ),
     Case(
         expected=["$0placeholder"],
         text="there is a unique placeholder here: $0placeholder and $0placeholder",
@@ -38,12 +44,12 @@ def test_find_placeholders() -> None:
             case.expected == result
         ), f"""
 
-En la cadena:
+string:
 \t{case.text!r}
 
-Deberían haberse encontrado:
+expected:
 \t{case.expected}
 
-Pero se encontraron:
+found:
 \t{result}
 """
