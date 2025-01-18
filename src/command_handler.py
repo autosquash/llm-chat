@@ -1,6 +1,6 @@
 from typing import Final
 
-from src.manager import LLM_Manager
+from src.llm_manager import LLM_Manager
 
 from .controllers import (
     Action,

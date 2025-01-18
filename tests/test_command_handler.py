@@ -17,7 +17,7 @@ from src.domain import (
 )
 from src.infrastructure.llm_connection import ClientWrapper
 from src.infrastructure.now import TimeManager
-from src.manager import LLM_Manager
+from src.llm_manager import LLM_Manager
 from src.model_manager import ModelManager
 from src.models.model_wrapper import ModelWrapper
 from src.protocols import ChatRepositoryProtocol

@@ -2,7 +2,7 @@ from typing import Final
 
 from src.controllers.command_interpreter import Action, ActionType
 from src.domain import CompleteMessage, ConversationId, ConversationText
-from src.manager import LLM_Manager
+from src.llm_manager import LLM_Manager
 from src.models.shared import extract_chat_messages
 from src.protocols import ViewProtocol
 from src.serde import deserialize_conversation_text_into_messages

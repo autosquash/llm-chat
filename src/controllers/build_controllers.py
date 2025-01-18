@@ -1,5 +1,5 @@
 from src.domain import CompleteMessage
-from src.manager import LLM_Manager
+from src.llm_manager import LLM_Manager
 from src.protocols import ViewProtocol
 
 from .controllers import Controllers
