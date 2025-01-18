@@ -1,6 +1,5 @@
-from src.domain import CompleteMessage
-from src.model_manager import ModelManager
-from src.protocols import ChatRepositoryProtocol, ViewProtocol
+from src.llm_manager import LLM_Manager
+from src.protocols import ViewProtocol
 
 from .controllers import Controllers
 from .conversation_loader import ConversationLoader
@@ -13,20 +12,15 @@ from .select_model import SelectModelController
 def build_controllers(
     select_model_controler: SelectModelController,
     view: ViewProtocol,
-    repository: ChatRepositoryProtocol,
-    model_manager: ModelManager,
-    prev_messages: list[CompleteMessage],
+    llm_manager: LLM_Manager,
 ) -> Controllers:
     conversation_loader = ConversationLoader(
         view=view,
-        repository=repository,
-        prev_messages=prev_messages,
+        llm_manager=llm_manager,
     )
     query_answerer = QueryAnswerer(
         view=view,
-        repository=repository,
-        model_manager=model_manager,
-        prev_messages=prev_messages,
+        llm_manager=llm_manager,
     )
     final_query_extractor = FinalQueryExtractor(view=view)
     return Controllers(
@@ -34,6 +28,6 @@ def build_controllers(
         conversation_loader=conversation_loader,
         query_answerer=query_answerer,
         final_query_extractor=final_query_extractor,
-        data_checker=DataChecker(repository),
+        data_checker=DataChecker(view, llm_manager),
         queries_checker=QueriesNumberChecker(view),
     )
