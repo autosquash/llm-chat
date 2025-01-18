@@ -1,7 +1,5 @@
 from collections.abc import Sequence
 
-from src.manager import LLM_Manager
-from src.model_manager import ModelManager
 from src.python_modules.FileSystemWrapper.file_manager import FileManager
 
 from src.command_handler import CommandHandler
@@ -12,6 +10,8 @@ from src.engine import MainEngine
 from src.infrastructure.chat_repository.repository import ChatRepository
 from src.infrastructure.main_path_provider import get_main_directory
 from src.infrastructure.now import TimeManager
+from src.llm_manager import LLM_Manager
+from src.model_manager import ModelManager
 from src.protocols import ClientWrapperProtocol
 from src.view.view import View
 

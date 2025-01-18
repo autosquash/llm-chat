@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Final, Sequence
 
 from src.domain import CompleteMessage, QueryResult
-from src.manager import LLM_Manager
+from src.llm_manager import LLM_Manager
 from src.models.placeholders import QueryText
 from src.protocols import ViewProtocol
 from src.view import Raw
