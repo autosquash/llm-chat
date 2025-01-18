@@ -6,6 +6,7 @@ from src.domain import (
 )
 from src.serde import Conversation, deserialize_conversation_text_into_messages
 from src.serde.deserialize import deserialize_into_conversation_object
+
 from tests.objects import (
     COMPLETE_MESSAGES_1,
     COMPLETE_MESSAGES_2,

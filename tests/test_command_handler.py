@@ -15,6 +15,7 @@ from src.domain import (
 )
 from src.serde.shared import SCHEMA_VERSION
 from src.view import Raw
+
 from tests.command_handler_fixtures import (
     CommandHandlerAdvancedFixture,
     CommandHandlerFixture,
