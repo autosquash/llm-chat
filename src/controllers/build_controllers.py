@@ -1,4 +1,3 @@
-from src.domain import CompleteMessage
 from src.llm_manager import LLM_Manager
 from src.protocols import ViewProtocol
 
@@ -14,17 +13,14 @@ def build_controllers(
     select_model_controler: SelectModelController,
     view: ViewProtocol,
     llm_manager: LLM_Manager,
-    prev_messages: list[CompleteMessage],
 ) -> Controllers:
     conversation_loader = ConversationLoader(
         view=view,
         llm_manager=llm_manager,
-        prev_messages=prev_messages,
     )
     query_answerer = QueryAnswerer(
         view=view,
         llm_manager=llm_manager,
-        prev_messages=prev_messages,
     )
     final_query_extractor = FinalQueryExtractor(view=view)
     return Controllers(

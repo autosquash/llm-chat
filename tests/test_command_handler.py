@@ -42,17 +42,18 @@ class CommandHandlerFixture:
         self.mock_repository = Mock(spec=ChatRepositoryProtocol)
         self.mock_client_wrapper = Mock(spec=ClientWrapper)
         self.mock_model_wrapper = Mock(spec=ModelWrapper)
+        self.prev_messages_stub: list[CompleteMessage] = []
         self.llm_manager = LLM_Manager(
-            self.mock_repository, ModelManager(self.mock_client_wrapper)
+            self.mock_repository,
+            ModelManager(self.mock_client_wrapper),
+            prev_messages=self.prev_messages_stub,
         )
         self.mock_time_manager = Mock(spec=TimeManager)
         self.mock_time_manager.get_current_time.return_value = "2024-03-01 01:30:00"
-        self.prev_messages_stub: list[CompleteMessage] = []
         self.command_handler = CommandHandler(
             view=self.mock_view,
             select_model_controler=self.mock_select_model_controler,
             llm_manager=self.llm_manager,
-            prev_messages=self.prev_messages_stub,
         )
 
 
