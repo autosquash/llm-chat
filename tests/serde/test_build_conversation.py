@@ -3,15 +3,18 @@ import unittest
 from src.domain import ConversationId
 from src.serde import convert_digits_to_conversation_id, serialize_conversation
 
-from tests.objects import COMPLETE_MESSAGES_1, TEXT_1
+from tests.objects import serialization_example_01
 
 
 class TestCreateConversationTexts(unittest.TestCase):
 
     def test_create_conversation_texts(self) -> None:
-        expected_conversation_text = TEXT_1
+        example = serialization_example_01
+        expected_conversation_text = example.serialized_text
         result = serialize_conversation(
-            COMPLETE_MESSAGES_1, ConversationId("0001"), "2024-03-16 14:50:15"
+            example.complete_messages,
+            ConversationId("0001"),
+            "2024-03-16 14:50:15",
         )
         self.assertEqual(expected_conversation_text, result)
 

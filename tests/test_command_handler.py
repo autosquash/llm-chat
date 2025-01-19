@@ -21,7 +21,7 @@ from tests.command_handler_fixtures import (
     CommandHandlerFixture,
     CommandHandlerFixtureWithModel,
 )
-from tests.objects import TEXT_1
+from tests.objects import serialization_example_01
 
 
 def test_process_system(command_handler_fixture: CommandHandlerFixture) -> None:
@@ -243,7 +243,7 @@ def test_load_conversation(
     fixture = command_handler_advanced_fixture
     remaining = "42"
     fixture.mock_repository.load_conversation_as_conversation_text.return_value = (
-        ConversationText(TEXT_1, SCHEMA_VERSION)
+        ConversationText(serialization_example_01.serialized_text, SCHEMA_VERSION)
     )
 
     fixture.command_handler.process_action(
