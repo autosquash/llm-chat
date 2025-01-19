@@ -3,10 +3,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.command_handler import CommandHandler
 from src.controllers.command_interpreter import Action, ActionType
 from src.controllers.final_query_extractor import DELIBERATE_INPUT_TIME
-from src.controllers.select_model import SelectModelController
 from src.domain import (
     CompleteMessage,
     ConversationId,
@@ -15,51 +13,15 @@ from src.domain import (
     ModelName,
     QueryResult,
 )
-from src.infrastructure.llm_connection import ClientWrapper
-from src.infrastructure.now import TimeManager
-from src.llm_manager import LLM_Manager
-from src.model_manager import ModelManager
-from src.models.model_wrapper import ModelWrapper
-from src.protocols import ChatRepositoryProtocol
 from src.serde.shared import SCHEMA_VERSION
 from src.view import Raw
-from src.view.view import View
-from tests.objects import TEXT_1
 
-
-class CommandHandlerFixture:
-    """
-    Base class for testing command handlers. This class should not be directly instantiated.
-    Therefore it should not include tests.
-    """
-
-    def __init__(self) -> None:
-        """
-        Sets up necessary mock objects and initial state for each test method.
-        """
-        self.mock_view = Mock(spec=View)
-        self.mock_select_model_controler = Mock(spec=SelectModelController)
-        self.mock_repository = Mock(spec=ChatRepositoryProtocol)
-        self.mock_client_wrapper = Mock(spec=ClientWrapper)
-        self.mock_model_wrapper = Mock(spec=ModelWrapper)
-        self.prev_messages_stub: list[CompleteMessage] = []
-        self.llm_manager = LLM_Manager(
-            self.mock_repository,
-            ModelManager(self.mock_client_wrapper),
-            prev_messages=self.prev_messages_stub,
-        )
-        self.mock_time_manager = Mock(spec=TimeManager)
-        self.mock_time_manager.get_current_time.return_value = "2024-03-01 01:30:00"
-        self.command_handler = CommandHandler(
-            view=self.mock_view,
-            select_model_controler=self.mock_select_model_controler,
-            llm_manager=self.llm_manager,
-        )
-
-
-@pytest.fixture
-def command_handler_fixture() -> CommandHandlerFixture:
-    return CommandHandlerFixture()
+from tests.command_handler_fixtures import (
+    CommandHandlerAdvancedFixture,
+    CommandHandlerFixture,
+    CommandHandlerFixtureWithModel,
+)
+from tests.objects import serialization_example_01
 
 
 def test_process_system(command_handler_fixture: CommandHandlerFixture) -> None:
@@ -81,70 +43,46 @@ def test_process_system(command_handler_fixture: CommandHandlerFixture) -> None:
     fixture.mock_view.write_object.assert_called_once_with("System prompt established")
 
 
-class AdvancedFixture(CommandHandlerFixture):
-    def __init__(self) -> None:
-        """
-        Sets up additional variables and inherits the base setup, define a multiline
-        user prompt to ensure that tests avoid infinite loops in mutation testing.
-        """
-        super().__init__()
-        self.model_name = ModelName("Model name test")
-        # if a line is not sent before the `end` command, there is a risk
-        # of creating an infinite loop when running the mutation tests
-        self.user_prompt_lines = [
-            (line, DELIBERATE_INPUT_TIME) for line in ["something more", "end"]
-        ]
-        self._select_model()
-
-    def _select_model(self) -> None:
-        """
-        Private helper method for selecting a model using the SelectModelController mock.
-        """
-        self.mock_select_model_controler.select_model.return_value = Model(
-            None, self.model_name
-        )
-        self.command_handler.prompt_to_select_model()
-
-
-@pytest.fixture
-def advanced_fixture() -> AdvancedFixture:
-    return AdvancedFixture()
-
-
-def test_show_model_works_when_no_extra_chat(advanced_fixture: AdvancedFixture) -> None:
+def test_show_model_works_when_no_extra_chat(
+    command_handler_fixture_with_model: CommandHandlerFixtureWithModel,
+) -> None:
     """
     Tests that displaying the current model works correctly when no extra chat is present.
     """
-    fixture = advanced_fixture
+    fixture = command_handler_fixture_with_model
     remaining = ""
 
     fixture.command_handler.process_action(Action(ActionType.SHOW_MODEL), remaining)
 
     assert len(fixture.prev_messages_stub) == 0
     fixture.mock_view.display_neutral_msg.assert_called_once_with(
-        Raw("El modelo actual es Model name test")
+        Raw("El modelo actual es model_name_test")
     )
 
 
 def test_show_model_fails_when_there_is_extra_prompt(
-    advanced_fixture: AdvancedFixture,
+    command_handler_fixture_with_model: CommandHandlerFixtureWithModel,
 ) -> None:
     """
     Tests that an error is raised when extraneous text is present in the prompt after
     the command to show the model.
     """
-    fixture = advanced_fixture
+
     remaining = "some text"
 
     with pytest.raises(ValueError):
-        fixture.command_handler.process_action(Action(ActionType.SHOW_MODEL), remaining)
+        command_handler_fixture_with_model.command_handler.process_action(
+            Action(ActionType.SHOW_MODEL), remaining
+        )
 
 
-def test_chat_with_model(advanced_fixture: AdvancedFixture) -> None:
+def test_chat_with_model(
+    command_handler_advanced_fixture: CommandHandlerAdvancedFixture,
+) -> None:
     """
     Simulates a conversation with the model, checking the correct continuation of interaction.
     """
-    fixture = advanced_fixture
+    fixture = command_handler_advanced_fixture
 
     fixture.mock_view.input_extra_line.side_effect = fixture.user_prompt_lines
     fixture.mock_client_wrapper.get_simple_response.side_effect = (
@@ -161,12 +99,14 @@ def test_chat_with_model(advanced_fixture: AdvancedFixture) -> None:
     assert len(fixture.prev_messages_stub) == 2
 
 
-def test_chat_with_model_using_placeholder(advanced_fixture: AdvancedFixture) -> None:
+def test_chat_with_model_using_placeholder(
+    command_handler_advanced_fixture: CommandHandlerAdvancedFixture,
+) -> None:
     """
     Checks that substitutions are made in the user's message, and a model response
     is requested.
     """
-    fixture = advanced_fixture
+    fixture = command_handler_advanced_fixture
     user_substitutions = {"$0something": "anything"}
     fixture.mock_view.input_extra_line.side_effect = fixture.user_prompt_lines
     fixture.mock_view.get_raw_substitutions_from_user.return_value = user_substitutions
@@ -184,7 +124,6 @@ def test_chat_with_model_using_placeholder(advanced_fixture: AdvancedFixture) ->
 
     fixture.mock_client_wrapper.get_simple_response.assert_called()
     calls = fixture.mock_client_wrapper.get_simple_response.mock_calls
-    print(calls)
     assert len(calls) == 1
     messages = calls[0].args[1]
     assert len(messages) == 2
@@ -192,12 +131,14 @@ def test_chat_with_model_using_placeholder(advanced_fixture: AdvancedFixture) ->
     assert user_message_replaced.chat_msg.content == expected_user_content_replaced
 
 
-def test_chat_with_model_continue(advanced_fixture: AdvancedFixture) -> None:
+def test_chat_with_model_continue(
+    command_handler_advanced_fixture: CommandHandlerAdvancedFixture,
+) -> None:
     """
     Simulates a conversation with the model, checking the correct continuation of
     interaction (although the model repeats the same thing for simplicity).
     """
-    fixture = advanced_fixture
+    fixture = command_handler_advanced_fixture
     # arrange
     fixture.mock_view.input_extra_line.side_effect = (
         fixture.user_prompt_lines + fixture.user_prompt_lines
@@ -223,11 +164,13 @@ def test_chat_with_model_continue(advanced_fixture: AdvancedFixture) -> None:
     assert len(fixture.prev_messages_stub) == 4
 
 
-def test_show_help_wait_user_press_enter(advanced_fixture: AdvancedFixture) -> None:
+def test_show_help_wait_user_press_enter(
+    command_handler_fixture: CommandHandlerFixture,
+) -> None:
     """
     Tests the help display functionality, requiring the user to press enter to proceed.
     """
-    fixture = advanced_fixture
+    fixture = command_handler_fixture
     remaining = ""
 
     fixture.command_handler.process_action(Action(ActionType.HELP), remaining)
@@ -241,12 +184,14 @@ def test_show_help_wait_user_press_enter(advanced_fixture: AdvancedFixture) -> N
     assert "enter" in prompt_for_user.value.lower()
 
 
-def test_debug_command_works(advanced_fixture: AdvancedFixture) -> None:
+def test_debug_command_works(
+    command_handler_advanced_fixture: CommandHandlerAdvancedFixture,
+) -> None:
     """
     Tests the debug functionality within the model interaction, ensuring the debug flag
     is correctly sent to ClientWrapper instance.
     """
-    fixture = advanced_fixture
+    fixture = command_handler_advanced_fixture
     remaining = "some text"
     fixture.mock_view.input_extra_line.side_effect = fixture.user_prompt_lines
     fixture.mock_client_wrapper.get_simple_response.return_value = QueryResult("", [])
@@ -288,15 +233,17 @@ def test_check_command_with_wrong_data(
         fixture.command_handler.process_action(Action(ActionType.CHECK_DATA), "")
 
 
-def test_load_conversation(advanced_fixture: AdvancedFixture) -> None:
+def test_load_conversation(
+    command_handler_advanced_fixture: CommandHandlerAdvancedFixture,
+) -> None:
     """
     Tests the loading of a specific conversation by ID, checking calls to retrieval
     and display of conversation data.
     """
-    fixture = advanced_fixture
+    fixture = command_handler_advanced_fixture
     remaining = "42"
     fixture.mock_repository.load_conversation_as_conversation_text.return_value = (
-        ConversationText(TEXT_1, SCHEMA_VERSION)
+        ConversationText(serialization_example_01.serialized_text, SCHEMA_VERSION)
     )
 
     fixture.command_handler.process_action(
@@ -341,7 +288,7 @@ def test_extra_lines_without_delay(
             return (lines.pop(0), 0)
         raise RuntimeError
 
-    model_name = ModelName("Model name test")
+    model_name = ModelName("model_name_test")
     model = Model(None, model_name)
 
     fixture.command_handler._llm_manager.model_manager.model_wrapper.change(  # pyright: ignore [reportPrivateUsage]
@@ -367,7 +314,7 @@ def test_extra_lines_with_delay(command_handler_fixture: CommandHandlerFixture) 
             return (lines.pop(), DELIBERATE_INPUT_TIME)
         raise RuntimeError
 
-    model_name = ModelName("Model name test")
+    model_name = ModelName("model_name_test")
     model = Model(None, model_name)
 
     fixture.command_handler._llm_manager.model_manager.model_wrapper.change(  # pyright: ignore [reportPrivateUsage]

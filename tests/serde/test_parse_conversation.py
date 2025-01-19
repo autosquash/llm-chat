@@ -6,12 +6,8 @@ from src.domain import (
 )
 from src.serde import Conversation, deserialize_conversation_text_into_messages
 from src.serde.deserialize import deserialize_into_conversation_object
-from tests.objects import (
-    COMPLETE_MESSAGES_1,
-    COMPLETE_MESSAGES_2,
-    TEXT_1,
-    TEXT_2,
-)
+
+from tests.objects import serialization_example_01, serialization_example_02
 
 
 def create_chat_msg(role: str, content: str) -> ChatMessage:
@@ -21,23 +17,23 @@ def create_chat_msg(role: str, content: str) -> ChatMessage:
 SCHEMA_VERSION = SchemaVersionId("0.2")
 CASES = [
     (
-        TEXT_1,
+        serialization_example_01.serialized_text,
         Conversation(
             ConversationId("0001"),
             SCHEMA_VERSION,
             4,
             "2024-03-16 14:50:15",
-            COMPLETE_MESSAGES_1,
+            serialization_example_01.complete_messages,
         ),
     ),
     (
-        TEXT_2,
+        serialization_example_02.serialized_text,
         Conversation(
             ConversationId("0002"),
             SCHEMA_VERSION,
             2,
             "2023-05-20 13:00:02",
-            COMPLETE_MESSAGES_2,
+            serialization_example_02.complete_messages,
         ),
     ),
 ]
@@ -54,13 +50,13 @@ def test_deserialize_conversation() -> None:
 
 
 def test_deserialize_messages() -> None:
-    for text, messages in [
-        (TEXT_1, COMPLETE_MESSAGES_1),
-        (TEXT_2, COMPLETE_MESSAGES_2),
+    for example in [
+        serialization_example_01,
+        serialization_example_02,
     ]:
         result = deserialize_conversation_text_into_messages(
-            ConversationText(text, SCHEMA_VERSION),
+            ConversationText(example.serialized_text, SCHEMA_VERSION),
             preserve_model=True,
             check_model_exists=False,
         )
-        assert result == messages
+        assert result == example.complete_messages
