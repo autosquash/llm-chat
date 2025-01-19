@@ -1,6 +1,9 @@
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import NewType
+
+__all__ = ["ModelName"]
 
 ConversationId = NewType("ConversationId", str)
 ModelName = NewType("ModelName", str)
@@ -42,4 +45,4 @@ class ConversationText:
 @dataclass(frozen=True)
 class QueryResult:
     content: str
-    messages: list[CompleteMessage]
+    messages: Sequence[CompleteMessage]

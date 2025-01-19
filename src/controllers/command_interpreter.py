@@ -3,6 +3,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Final
 
+StrSequence = tuple[str, ...] | list[str]
+
 
 class ActionType(Enum):
     EXIT = "EXIT"
@@ -28,7 +30,7 @@ class CommandNoValid(Exception):
         super().__init__(f"No valid command: {wrong_command}")
 
 
-command_map = {
+command_map: dict[ActionType, StrSequence] = {
     ActionType.EXIT: ("q", "quit", "exit"),
     ActionType.HELP: ("h", "help"),
     ActionType.DEBUG: ("d", "debug"),

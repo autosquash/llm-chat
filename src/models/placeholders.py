@@ -3,7 +3,7 @@ from typing import Final, Mapping, NewType
 
 from src.utils import remove_duplicates
 
-__all__ = ["build_queries", "find_unique_placeholders"]
+__all__ = ["build_queries", "find_unique_placeholders", "QueryText"]
 
 Placeholder = NewType("Placeholder", str)
 

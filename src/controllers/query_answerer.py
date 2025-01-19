@@ -32,29 +32,27 @@ class QueryAnswerer:
         messages = None
         for i, query in enumerate(queries):
             messages = self._answer_query(debug, i + 1, len(queries), query)
+
         self._llm_manager.prev_messages[:] = messages or []
 
     def _answer_query(
         self, debug: bool, current: int, total: int, query: QueryText
-    ) -> list[CompleteMessage] | None:
+    ) -> Sequence[CompleteMessage] | None:
         self._view.display_processing_query_text(current=current, total=total)
         query_result = self._get_simple_response_from_model(query, debug)
         self._print_interaction(query, query_result)
-        self._llm_manager.repository.save_messages(query_result.messages)
         return query_result.messages if current == 1 else None
 
     def _get_simple_response_from_model(
         self, query: QueryText, debug: bool = False
     ) -> QueryResult:
-        return self._llm_manager.model_manager.get_simple_response(
-            query, self._llm_manager.prev_messages, debug=debug
-        )
+        return self._llm_manager.get_simple_response(query, debug=debug)
 
     def _print_interaction(self, query: QueryText, query_result: QueryResult) -> None:
-        model = self._llm_manager.model_manager.model_wrapper.model
-        assert model
+        model_name = self._llm_manager.get_model_name()
+        assert model_name
         self._view.print_interaction(
-            model.model_name,
+            model_name,
             Raw(query),
             Raw(query_result.content),
         )
