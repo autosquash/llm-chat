@@ -1,5 +1,5 @@
-from src.controllers.select_model import SelectModelController
-from src.models_data import get_models
+from llm_chat.controllers.select_model import SelectModelController
+from llm_chat.models_data import get_models
 
 
 def test_default_model() -> None:

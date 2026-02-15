@@ -1,11 +1,11 @@
 # si le pedimos al llm manager que responda una query, grabara los mensajes
 from unittest.mock import Mock
 
-from src.domain import CompleteMessage, QueryResult
-from src.llm_manager import LLM_Manager
-from src.model_manager import ModelManager
-from src.models.placeholders import QueryText
-from src.protocols import ChatRepositoryProtocol
+from llm_chat.domain import CompleteMessage, QueryResult
+from llm_chat.llm_manager import LLM_Manager
+from llm_chat.model_manager import ModelManager
+from llm_chat.models.placeholders import QueryText
+from llm_chat.protocols import ChatRepositoryProtocol
 
 
 def test_llm_manager() -> None:

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from src.models.placeholders import find_unique_placeholders
+from llm_chat.models.placeholders import find_unique_placeholders
 
 
 @dataclass(frozen=True)

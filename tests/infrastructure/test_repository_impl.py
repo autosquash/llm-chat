@@ -1,13 +1,13 @@
 from unittest.mock import Mock
 
-from src.python_modules.FileSystemWrapper.file_manager_protocol import (
+from llm_chat.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
 
-from src.infrastructure.chat_repository.chat_file_detecter import (
+from llm_chat.infrastructure.chat_repository.chat_file_detecter import (
     match_chat_file_pattern,
 )
-from src.infrastructure.chat_repository.implementer import (
+from llm_chat.infrastructure.chat_repository.implementer import (
     ChatRepositoryImplementer,
     DataLocation,
 )

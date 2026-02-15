@@ -6,17 +6,17 @@ from typing import Any, Final, cast
 
 from dotenv import load_dotenv
 
-from src.python_modules.FileSystemWrapper.file_manager import FileManager
+from llm_chat.python_modules.FileSystemWrapper.file_manager import FileManager
 
-from src.domain import ChatMessage, CompleteMessage, Model, QueryResult
-from src.infrastructure.chat_repository.repository import ChatRepository
-from src.infrastructure.llm_connection import ClientWrapper
-from src.infrastructure.now import TimeManager
-from src.models.shared import define_system_prompt
-from src.models_data import get_models
-from src.protocols import ChatRepositoryProtocol, ClientWrapperProtocol
-from src.setup_logging import configure_logger, format_var
-from src.view import Raw, SimpleView, display_neutral_msg, escape_for_rich
+from llm_chat.domain import ChatMessage, CompleteMessage, Model, QueryResult
+from llm_chat.infrastructure.chat_repository.repository import ChatRepository
+from llm_chat.infrastructure.llm_connection import ClientWrapper
+from llm_chat.infrastructure.now import TimeManager
+from llm_chat.models.shared import define_system_prompt
+from llm_chat.models_data import get_models
+from llm_chat.protocols import ChatRepositoryProtocol, ClientWrapperProtocol
+from llm_chat.setup_logging import configure_logger, format_var
+from llm_chat.view import Raw, SimpleView, display_neutral_msg, escape_for_rich
 
 from .function_calling import (
     FunctionCall,

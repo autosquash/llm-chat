@@ -1,4 +1,4 @@
-from src.serde.deserialize import ParsedLine, TagType
+from llm_chat.serde.deserialize import ParsedLine, TagType
 
 NO_TAGS = [
     "",

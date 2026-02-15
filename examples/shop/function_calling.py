@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import TypedDict, TypeGuard
 
-from src.infrastructure.exceptions import LLMChatException
+from llm_chat.infrastructure.exceptions import LLMChatException
 
 from .types import is_object_mapping
 

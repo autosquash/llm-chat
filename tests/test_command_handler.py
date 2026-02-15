@@ -3,9 +3,9 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.controllers.command_interpreter import Action, ActionType
-from src.controllers.final_query_extractor import DELIBERATE_INPUT_TIME
-from src.domain import (
+from llm_chat.controllers.command_interpreter import Action, ActionType
+from llm_chat.controllers.final_query_extractor import DELIBERATE_INPUT_TIME
+from llm_chat.domain import (
     CompleteMessage,
     ConversationId,
     ConversationText,
@@ -13,8 +13,8 @@ from src.domain import (
     ModelName,
     QueryResult,
 )
-from src.serde.shared import SCHEMA_VERSION
-from src.view import Raw
+from llm_chat.serde.shared import SCHEMA_VERSION
+from llm_chat.view import Raw
 
 from tests.command_handler_fixtures import (
     CommandHandlerAdvancedFixture,

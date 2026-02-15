@@ -1,7 +1,7 @@
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from src.domain import ChatMessage, CompleteMessage, Model, ModelName
+from llm_chat.domain import ChatMessage, CompleteMessage, Model, ModelName
 
 __all__ = ["serialization_example_01", "serialization_example_02"]
 

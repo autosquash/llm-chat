@@ -1,5 +1,5 @@
-from src.infrastructure.exceptions import LLMChatException
-from src.view import Raw, show_error_msg
+from llm_chat.infrastructure.exceptions import LLMChatException
+from llm_chat.view import Raw, show_error_msg
 
 from .main import Main
 

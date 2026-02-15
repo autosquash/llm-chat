@@ -2,7 +2,7 @@ import unittest
 from dataclasses import dataclass
 from typing import Mapping, TypeGuard
 
-from src.models.placeholders import (
+from llm_chat.models.placeholders import (
     Placeholder,
     QueryBuildException,
     build_queries,

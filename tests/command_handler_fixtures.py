@@ -2,17 +2,17 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.command_handler import CommandHandler
-from src.controllers.final_query_extractor import DELIBERATE_INPUT_TIME
-from src.controllers.select_model import SelectModelController
-from src.domain import CompleteMessage, Model, ModelName
-from src.infrastructure.llm_connection import ClientWrapper
-from src.infrastructure.now import TimeManager
-from src.llm_manager import LLM_Manager
-from src.model_manager import ModelManager
-from src.models.model_wrapper import ModelWrapper
-from src.protocols import ChatRepositoryProtocol
-from src.view.view import View
+from llm_chat.command_handler import CommandHandler
+from llm_chat.controllers.final_query_extractor import DELIBERATE_INPUT_TIME
+from llm_chat.controllers.select_model import SelectModelController
+from llm_chat.domain import CompleteMessage, Model, ModelName
+from llm_chat.infrastructure.llm_connection import ClientWrapper
+from llm_chat.infrastructure.now import TimeManager
+from llm_chat.llm_manager import LLM_Manager
+from llm_chat.model_manager import ModelManager
+from llm_chat.models.model_wrapper import ModelWrapper
+from llm_chat.protocols import ChatRepositoryProtocol
+from llm_chat.view.view import View
 
 
 class CommandHandlerFixture:

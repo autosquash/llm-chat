@@ -2,14 +2,14 @@ from unittest.mock import Mock
 
 import pytest
 
-from src.command_handler import CommandHandler
-from src.controllers.command_interpreter import (
+from llm_chat.command_handler import CommandHandler
+from llm_chat.controllers.command_interpreter import (
     CommandInterpreter,
     CommandNoValid,
 )
-from src.engine import MainEngine
-from src.view import Raw
-from src.view.view import View
+from llm_chat.engine import MainEngine
+from llm_chat.view import Raw
+from llm_chat.view.view import View
 
 
 class EngineFixture:

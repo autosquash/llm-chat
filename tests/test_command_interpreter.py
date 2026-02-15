@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 import pytest
 
-from src.controllers.command_interpreter import (
+from llm_chat.controllers.command_interpreter import (
     ActionType,
     CommandInterpreter,
     CommandNoValid,

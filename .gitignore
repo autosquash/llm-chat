@@ -6,3 +6,4 @@
 .mutmut-cache
 logs/
 html/
+*.egg-info/

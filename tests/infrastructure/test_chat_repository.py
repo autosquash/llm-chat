@@ -2,12 +2,12 @@ from pathlib import PurePath
 from typing import Any
 from unittest.mock import MagicMock, Mock
 
-from src.python_modules.FileSystemWrapper.file_manager_protocol import (
+from llm_chat.python_modules.FileSystemWrapper.file_manager_protocol import (
     FileManagerProtocol,
 )
 
-from src.infrastructure.chat_repository.repository import ChatRepository
-from src.infrastructure.now import TimeManager
+from llm_chat.infrastructure.chat_repository.repository import ChatRepository
+from llm_chat.infrastructure.now import TimeManager
 
 
 def test_create_chat_repository_trigger_filesystem_setup() -> None:

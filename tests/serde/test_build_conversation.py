@@ -1,7 +1,7 @@
 import unittest
 
-from src.domain import ConversationId
-from src.serde import convert_digits_to_conversation_id, serialize_conversation
+from llm_chat.domain import ConversationId
+from llm_chat.serde import convert_digits_to_conversation_id, serialize_conversation
 
 from tests.objects import serialization_example_01
 

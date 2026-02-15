@@ -1,11 +1,11 @@
-from src.domain import (
+from llm_chat.domain import (
     ChatMessage,
     ConversationId,
     ConversationText,
     SchemaVersionId,
 )
-from src.serde import Conversation, deserialize_conversation_text_into_messages
-from src.serde.deserialize import deserialize_into_conversation_object
+from llm_chat.serde import Conversation, deserialize_conversation_text_into_messages
+from llm_chat.serde.deserialize import deserialize_into_conversation_object
 
 from tests.objects import serialization_example_01, serialization_example_02
 

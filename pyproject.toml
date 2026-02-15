@@ -22,5 +22,8 @@ dev = [
   "isort>=5.13.2,<6.0.0",
 ]
 
+[project.scripts]
+llm_chat = "llm_chat.main:main"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]

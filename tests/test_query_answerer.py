@@ -1,11 +1,11 @@
 from unittest.mock import Mock
 
-from src.controllers.query_answerer import QueryAnswerer
-from src.domain import CompleteMessage, QueryResult
-from src.llm_manager import LLM_Manager
-from src.models.placeholders import QueryText
-from src.protocols import ViewProtocol
-from src.view.string_types import Raw
+from llm_chat.controllers.query_answerer import QueryAnswerer
+from llm_chat.domain import CompleteMessage, QueryResult
+from llm_chat.llm_manager import LLM_Manager
+from llm_chat.models.placeholders import QueryText
+from llm_chat.protocols import ViewProtocol
+from llm_chat.view.string_types import Raw
 
 
 def test_query_answerer() -> None:

@@ -1,4 +1,4 @@
-from src.utils import remove_duplicates
+from llm_chat.utils import remove_duplicates
 
 
 def test_remove_duplicates() -> None:
