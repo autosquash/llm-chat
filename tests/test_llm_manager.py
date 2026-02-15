@@ -1,5 +1,6 @@
 # si le pedimos al llm manager que responda una query, grabara los mensajes
 from unittest.mock import Mock
+
 from src.domain import CompleteMessage, QueryResult
 from src.llm_manager import LLM_Manager
 from src.model_manager import ModelManager

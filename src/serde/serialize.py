@@ -1,4 +1,6 @@
-from typing import Sequence, cast
+from __future__ import annotations
+
+from typing import Sequence, TypeVar, cast
 
 from src.domain import CompleteMessage, ConversationId
 
@@ -7,25 +9,36 @@ from .shared import SCHEMA_VERSION
 
 NUMBER_OF_DIGITS = 4
 
+Self = TypeVar("Self", bound="SerializedConversationBuilder")
+
 
 class SerializedConversationBuilder:
     def __init__(self) -> None:
         self._texts: list[str] = []
 
-    def add_meta_tag(self, name: str, value: object) -> None:
-        self._texts.append(create_meta_tag(name, value))
+    def add_meta_tag(self: Self, name: str, value: object) -> Self:
+        self._append_text(create_meta_tag(name, value))
+        return self
 
-    def add_role_tag(self, complete_message: CompleteMessage) -> None:
-        self._texts.append(create_role_tag(complete_message))
+    def add_role_tag(self: Self, complete_message: CompleteMessage) -> Self:
+        self._append_text(create_role_tag(complete_message))
+        return self
 
-    def add_line_break(self) -> None:
-        self._texts.append("")
+    def add_line_break(self: Self) -> Self:
+        self._append_text("")
+        return self
 
-    def add_text(self, text: str) -> None:
-        self._texts.append(text)
+    def add_text(self: Self, text: str) -> Self:
+        self._append_text(text)
+        return self
 
     def build(self) -> str:
         return "\n".join(self._texts)
+
+    ## Private methods
+
+    def _append_text(self, text: str) -> None:
+        self._texts.append(text)
 
 
 def serialize_conversation(
@@ -34,18 +47,20 @@ def serialize_conversation(
     current_time: str,
 ) -> str:
     number_of_messages = len(complete_messages)
-    builder = SerializedConversationBuilder()
-    builder.add_meta_tag("id", conversation_id)
-    builder.add_line_break()
-    builder.add_meta_tag("schema_version", SCHEMA_VERSION)
-    builder.add_meta_tag("number_of_messages", number_of_messages)
-    builder.add_meta_tag("current_time", current_time)
+    builder = (
+        SerializedConversationBuilder()
+        .add_meta_tag("id", conversation_id)
+        .add_line_break()
+        .add_meta_tag("schema_version", SCHEMA_VERSION)
+        .add_meta_tag("number_of_messages", number_of_messages)
+        .add_meta_tag("current_time", current_time)
+    )
     for complete_message in complete_messages:
-        builder.add_line_break()
-        builder.add_role_tag(complete_message)
         message = complete_message.chat_msg
         assert isinstance(message.content, str)
-        builder.add_text(message.content)
+        builder.add_line_break().add_role_tag(complete_message).add_text(
+            message.content
+        )
     return builder.build()
 
 
