@@ -17,11 +17,11 @@ class SerializedConversationBuilder:
         self._texts: list[str] = []
 
     def add_meta_tag(self: Self, name: str, value: object) -> Self:
-        self._append_text(create_meta_tag(name, value))
+        self._append_text(_create_meta_tag(name, value))
         return self
 
     def add_role_tag(self: Self, complete_message: CompleteMessage) -> Self:
-        self._append_text(create_role_tag(complete_message))
+        self._append_text(_create_role_tag(complete_message))
         return self
 
     def add_line_break(self: Self) -> Self:
@@ -70,24 +70,24 @@ def convert_digits_to_conversation_id(string: str) -> ConversationId:
     return cast(ConversationId, string.zfill(NUMBER_OF_DIGITS))
 
 
-def create_role_tag(complete_message: CompleteMessage) -> str:
+def _create_role_tag(complete_message: CompleteMessage) -> str:
     message = complete_message.chat_msg
     tag_identifier = f"ROLE {message.role.upper()}"
     if model := complete_message.model:
         assert message.role == "assistant"
-        return create_tag(tag_identifier, ("model", model.model_name))
-    return create_tag(tag_identifier)
+        return _create_tag(tag_identifier, ("model", model.model_name))
+    return _create_tag(tag_identifier)
 
 
-def create_meta_tag(key: str, value: object) -> str:
-    return create_tag_with_property(TagType.META, key, value)
+def _create_meta_tag(key: str, value: object) -> str:
+    return _create_tag_with_property(TagType.META, key, value)
 
 
-def create_tag_with_property(tag_type: TagType, key: str, value: object) -> str:
-    return create_tag(tag_type.value.upper(), (key, value))
+def _create_tag_with_property(tag_type: TagType, key: str, value: object) -> str:
+    return _create_tag(tag_type.value.upper(), (key, value))
 
 
-def create_tag(tag_identifier: str, property: tuple[str, object] | None = None) -> str:
+def _create_tag(tag_identifier: str, property: tuple[str, object] | None = None) -> str:
     assert tag_identifier.isupper()
     parts = [tag_identifier]
     if property:
